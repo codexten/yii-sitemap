@@ -6,6 +6,7 @@ use codexten\yii\web\UrlManager;
 
 class Sitemap extends \zhelyabuzhsky\sitemap\components\Sitemap
 {
+    public $siteUrl;
     public $models = [];
     /**
      * @var UrlManager
@@ -18,6 +19,8 @@ class Sitemap extends \zhelyabuzhsky\sitemap\components\Sitemap
     public function init()
     {
         $this->sitemapDirectory = \Yii::getAlias($this->sitemapDirectory);
+        $this->siteUrl = \Yii::getAlias($this->siteUrl);
+
         parent::init();
     }
 
@@ -48,15 +51,13 @@ class Sitemap extends \zhelyabuzhsky\sitemap\components\Sitemap
         $objDateTime = new \DateTime('NOW');
         $lastmod = $objDateTime->format(\DateTime::W3C);
 
-        $baseUrl = \Yii::$app->urlManager->baseUrl;
-        $hostInfo = \Yii::$app->urlManager->hostInfo;
 
         foreach ($this->generatedFiles as $fileName) {
             fwrite(
                 $this->handle,
                 PHP_EOL.
                 '<sitemap>'.PHP_EOL.
-                "\t".'<loc>'.$hostInfo.$baseUrl.'/'.$fileName.'.gz'.'</loc>'.PHP_EOL.
+                "\t".'<loc>'.$this->siteUrl.'/'.$fileName.'.gz'.'</loc>'.PHP_EOL.
                 "\t".'<lastmod>'.$lastmod.'</lastmod>'.PHP_EOL.
                 '</sitemap>'
             );
