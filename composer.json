@@ -7,21 +7,15 @@
   },
   "autoload": {
     "psr-4": {
-      "codexten\\cms\\": "src"
+      "codexten\\yii\\sitemap\\": "src"
     }
   },
   "extra": {
     "branch-alias": {
       "dev-master": "2.0.x-dev"
     },
-    "sconfig-plugin": {
-      "core": "config/core.php",
-      "console": "config/console.php",
-      "cmsAdmin": [
-        "$moduleContentBlock",
-        "$modulePage",
-        "config/cmsAdmin.php"
-      ]
+    "config-plugin": {
+      "sitemap": "config/sitemap.php"
     }
   }
 }
