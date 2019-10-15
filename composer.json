@@ -15,7 +15,9 @@
       "dev-master": "2.0.x-dev"
     },
     "config-plugin": {
-      "sitemap": "config/sitemap.php"
+      "sitemap": "config/sitemap.php",
+      "console": "config/console.php",
+      "params": "config/params.php"
     }
   }
 }
