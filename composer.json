@@ -1,0 +1,27 @@
+{
+  "name": "codexten/yii-site",
+  "description": "yii sitemap",
+  "type": "cms-package",
+  "require": {
+    "zhelyabuzhsky/yii2-sitemap": "^1.1"
+  },
+  "autoload": {
+    "psr-4": {
+      "codexten\\cms\\": "src"
+    }
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-master": "2.0.x-dev"
+    },
+    "sconfig-plugin": {
+      "core": "config/core.php",
+      "console": "config/console.php",
+      "cmsAdmin": [
+        "$moduleContentBlock",
+        "$modulePage",
+        "config/cmsAdmin.php"
+      ]
+    }
+  }
+}
