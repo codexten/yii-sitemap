@@ -16,7 +16,10 @@
     },
     "config-plugin": {
       "sitemap": "config/sitemap.php",
-      "console": "config/console.php",
+      "console": [
+        "$sitemap",
+        "config/console.php"
+      ],
       "params": "config/params.php"
     }
   }

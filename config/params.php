@@ -1,6 +1,6 @@
 <?php
 
 return [
-    'sitemap.dir' => '',
+    'sitemap.dir' => '@site',
     'sitemap.models' => [],
 ];
