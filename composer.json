@@ -1,5 +1,5 @@
 {
-  "name": "codexten/yii-site",
+  "name": "codexten/yii-sitemap",
   "description": "yii sitemap",
   "type": "cms-package",
   "require": {
