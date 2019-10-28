@@ -3,11 +3,16 @@
 namespace codexten\yii\sitemap\components;
 
 use codexten\yii\web\UrlManager;
+use zhelyabuzhsky\sitemap\models\SitemapEntityInterface;
+use yii\base\Component;
+use yii\base\Exception;
+
 
 class Sitemap extends \zhelyabuzhsky\sitemap\components\Sitemap
 {
     public $siteUrl;
     public $models = [];
+    public $entities = [];
     /**
      * @var UrlManager
      */
@@ -25,7 +30,7 @@ class Sitemap extends \zhelyabuzhsky\sitemap\components\Sitemap
     }
 
     /**
-     * {@inheritDoc}
+     * Create sitemap file.
      */
     public function create()
     {
@@ -33,7 +38,34 @@ class Sitemap extends \zhelyabuzhsky\sitemap\components\Sitemap
             $this->addModel($model);
         }
 
-        parent::create();
+        $this->fileIndex = 0;
+        $this->beginFile();
+
+        foreach ($this->dataSources as $dataSource) {
+            /** @var ActiveQuery $query */
+            $query = $dataSource['query'];
+            /** @var Connection $connection */
+            $connection = $dataSource['connection'];
+            foreach ($query->batch(100, $connection) as $entities) {
+                foreach ($entities as $entity) {
+                    if (!$this->isDisallowUrl($entity->getSitemapLoc())) {
+                        $this->writeEntity($entity);
+                    }
+                }
+            }
+        }
+
+        foreach ($this->entities as $entity) {
+            $this->writeEntity($entity);
+        }
+
+        if (is_resource($this->handle)) {
+            $this->closeFile();
+            $this->gzipFile();
+        }
+
+        $this->createIndexFile();
+        $this->updateSitemaps();
     }
 
     /**
@@ -65,5 +97,40 @@ class Sitemap extends \zhelyabuzhsky\sitemap\components\Sitemap
         fwrite($this->handle, PHP_EOL.'</sitemapindex>');
         fclose($this->handle);
         $this->gzipFile();
+    }
+
+    /**
+     * Write entity to sitemap file.
+     *
+     * @param  SitemapEntityInterface|array  $entity
+     */
+    protected function writeEntity($entity)
+    {
+        $str = PHP_EOL.'<url>'.PHP_EOL;
+
+        foreach (
+            array_merge(
+                ['loc'],
+                $this->optionalAttributes
+            ) as $attribute
+        ) {
+            $attributeValue = is_array($entity) ? $entity[$attribute] : call_user_func([
+                $entity,
+                'getSitemap'.$attribute,
+            ]);
+
+            $str .= sprintf("\t<%s>%s</%1\$s>", $attribute, $attributeValue).PHP_EOL;
+        }
+
+        $str .= '</url>';
+
+        if ($this->isLimitExceeded(strlen($str))) {
+            $this->closeFile();
+            $this->gzipFile();
+            $this->beginFile();
+        }
+
+        fwrite($this->handle, $str);
+        ++$this->urlCount;
     }
 }
